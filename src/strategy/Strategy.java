@@ -47,7 +47,6 @@ public abstract class Strategy {
 			this.epsilon = this.base_epsilon;
 		} else {
 			this.epsilon = 0;
-			
 		}
 	}
 

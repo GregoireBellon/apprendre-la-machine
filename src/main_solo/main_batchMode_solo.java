@@ -9,6 +9,7 @@ import model.InputMap;
 import model.SnakeGame;
 import strategy.ApproximateQLearning_solo;
 import strategy.Strategy;
+import strategy.StrategyRandom;
 import strategy.TabularQLearning_solo;
 import utils.AgentAction;
 import view.PanelSnakeGame;
@@ -27,7 +28,7 @@ public class main_batchMode_solo {
 
 		boolean randomFirstApple = true;	
 		
-		String layoutName = "layouts/alone/smallNoWall_alone.lay";
+		String layoutName = "layouts/alone/small_alone.lay";
 		
 		InputMap inputMap = null;
 		
@@ -42,7 +43,7 @@ public class main_batchMode_solo {
 		
 //	    arrayStrategies[0] = new TabularQLearning_solo(AgentAction.values().length, epsilon, gamma, alpha);
 		arrayStrategies[0] = new ApproximateQLearning_solo(AgentAction.values().length, epsilon, gamma, alpha);
-
+//		arrayStrategies[0] = new StrategyRandom()
 		//Nombre de simulations séquentielles lancees pour calculer la recompense moyenne en mode train
 		int Ntrain = 100;
 

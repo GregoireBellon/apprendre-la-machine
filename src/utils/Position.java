@@ -30,6 +30,23 @@ public class Position implements Serializable{
 	}
 	
 	@Override
+	public int hashCode() {
+		return (this.x+":"+this.y).hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+
+		if(!(obj instanceof Position)) {
+			return false;
+		}
+		
+		Position converted = (Position) obj;
+		return converted.x == this.x && converted.y == this.y;
+		
+	}
+	
+	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "(" + this.getX() + ", " + this.getY() + ")";

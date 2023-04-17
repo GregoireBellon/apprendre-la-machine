@@ -1,22 +1,17 @@
 package strategy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import agent.Snake;
-import item.Item;
 import model.SnakeGame;
 
 import utils.AgentAction;
 import utils.Feature;
 import utils.GameHelpers;
-import utils.ItemType;
 import utils.Position;
 
 
@@ -27,21 +22,16 @@ public class ApproximateQLearning_solo extends Strategy{
 	//	Manathan distance de la pomme la plus proche
 	//	Manathan distance du mur le plus proche
 	//	L'action va elle nous tuer ?
+	//  Quel espace espace du terrain est accessible après ce move ? (permet d'éviter de s'enfermer)
 
 	private double w[];
 	private Feature[] features;
-	private double total_reward;
-	private int tour_cpt;
-	double total_guess;
 
 	private  Feature pommeProche = (int idxSnake, SnakeGame game, Position next_pos) -> {
 		double ret = GameHelpers.closestApple(next_pos, game);
 		
-		return ret - game.getSizeX() + game.getSizeY();
-		
-		//		System.out.println("Pomme la plus proche : " + ret);
-//		return -ret ;
-	};
+		return ret;
+		};
 
 	private Feature actionMortelle = (int idxSnake, SnakeGame game, Position next_pos) -> {
 		double ret =  GameHelpers.deadPos(next_pos, game) ? 1 : 0;
@@ -51,27 +41,30 @@ public class ApproximateQLearning_solo extends Strategy{
 
 	private Feature murProche = (int idxSnake, SnakeGame game, Position next_pos) -> {
 		double ret = GameHelpers.closestWall(next_pos, game);
-//				System.out.println("Mur le plus proche : " + ret);
-		return -ret;
+		return ret;
+	};
+	
+	private Feature spaceAround = (int idxSnake, SnakeGame game, Position next_pos) -> {
+		
+		double ret = GameHelpers.freeSpaceAround(next_pos, game);
+//		System.out.println("Space around : " + ret);
+		
+		return ret;
+		
 	};
 
 
 	public ApproximateQLearning_solo(int nbActions, double epsilon, double gamma, double alpha) {	
 		super(nbActions, epsilon, gamma, alpha);
 
-		this.features = new Feature[] {Feature.emptyFeature, pommeProche, actionMortelle};
-
-		this.total_reward = 0;
-		this.total_guess = 0;
-		this.tour_cpt = 0;
+		this.features = new Feature[] {Feature.emptyFeature, pommeProche, 
+				actionMortelle, murProche};
 
 		Random r = new Random();
 
 		this.w = new double[this.features.length];
 		for(int i = 0; i < this.w.length; i++) {this.w[i] = r.nextGaussian();}
 		
-//		this.w = new double[] {-0.28661643707056117, 0.23784230344219542, -10.2147240287572967};
-
 	}
 
 
@@ -80,7 +73,6 @@ public class ApproximateQLearning_solo extends Strategy{
 	public synchronized AgentAction chooseAction(int idxSnake, SnakeGame snakeGame) {
 
 		
-//		if()
 		
 		Position current_pos = snakeGame.getSnakes().get(idxSnake).getPositions().get(0);
 //		System.out.println("Current pos : " + current_pos);		
@@ -91,14 +83,13 @@ public class ApproximateQLearning_solo extends Strategy{
 
 		if(r.nextDouble() < this.epsilon) {
 //			System.out.println("epsiloned");
+//			Dans ce cas, best_action sera random
 			return best_action;
 		}
 
 
 		best_action = getMaxScore(current_pos, best_action, snakeGame, idxSnake).getKey();
-
 		
-//		System.out.println("chosed " + best_action);
 		
 		return best_action;
 
@@ -156,13 +147,6 @@ public class ApproximateQLearning_solo extends Strategy{
 				})
 
 				.sorted((pair1, pair2) -> (int) (pair1.getValue().compareTo(pair2.getValue()))).collect(Collectors.toList());
-
-//				for(ImmutablePair<AgentAction, Double> score : all) {
-//					System.out.println(score.getKey() + " : " + score.getValue());
-//				}
-//
-//
-//				System.out.println("selected : " + all.get(all.size()-1).getValue());
 				
 				return all.get(all.size()-1);
 	}
@@ -232,15 +216,16 @@ public class ApproximateQLearning_solo extends Strategy{
 
 		this.updateW(idx, state, targetQ, action);
 
-		
+//		if(isFinalState) {
+//			
 //		String result = "";
 //		for(double param : this.w) {
 //			result += (param + ", ");
 //		}
 //
 //		System.out.println("Final w : " + result);
+//		}
 
-//		this.total_reward = 0;
 
 	}
 

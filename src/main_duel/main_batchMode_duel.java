@@ -9,6 +9,7 @@ import model.InputMap;
 import model.SnakeGame;
 import strategy.ApproximateQLearning_duel;
 import strategy.ApproximateQLearning_solo;
+import strategy.ChallengeQLearning;
 import strategy.Strategy;
 import strategy.StrategyAdvanced;
 import strategy.StrategyHuman;
@@ -27,12 +28,12 @@ public class main_batchMode_duel {
 	public static void main(String[] args) {
 		
 		double gamma = 0.95;
-		double epsilon = 0.2;
-		double alpha = 0.01;
+		double epsilon = 0.3;
+		double alpha = 0.001;
 
-		boolean randomFirstApple = true;
+		boolean randomFirstApple = false;
 		
-		String layoutName = "layouts/duel/smallArenaNoWall.lay";
+		String layoutName = "layouts/duel/arenaNoWall.lay";
 		
 		InputMap inputMap = null;
 		
@@ -45,8 +46,10 @@ public class main_batchMode_duel {
 		
 		Strategy[] arrayStrategies = new Strategy[inputMap.getStart_snakes().size()];
 		
-	    arrayStrategies[0] = new ApproximateQLearning_duel(AgentAction.values().length, epsilon, gamma, alpha); 
-	    arrayStrategies[1] = new StrategyRandom();
+	    arrayStrategies[0] = new ChallengeQLearning(AgentAction.values().length, epsilon, gamma, alpha); 
+//	    arrayStrategies[1] = new ApproximateQLearning_duel(AgentAction.values().length, epsilon, gamma, alpha); 
+	    arrayStrategies[1] = new ApproximateQLearning_solo(AgentAction.values().length, epsilon, gamma, alpha); 
+//	    arrayStrategies[1] = new StrategyRandom(); 
 
 		
 
@@ -68,10 +71,10 @@ public class main_batchMode_duel {
 			System.out.println("Compute score in test mode");
 			launchParallelGames(Ntest, maxTurnSnakeGame, inputMap, arrayStrategies, false, randomFirstApple);
 			
-			if(cpt%10 == 0) {
-				System.out.println("Visualization mode");
-				vizualize(maxTurnSnakeGame, inputMap, arrayStrategies, false, randomFirstApple);
-			}
+//			if(cpt%10 == 0) {
+//				System.out.println("Visualization mode");
+//				vizualize(maxTurnSnakeGame, inputMap, arrayStrategies, false, randomFirstApple);
+//			}
 			
 			System.out.println("Play and collect examples - train mode");
 			launchParallelGames(Ntrain, maxTurnSnakeGame, inputMap, arrayStrategies, true, randomFirstApple);
@@ -106,7 +109,7 @@ public class main_batchMode_duel {
 			SnakeGame snakeGame = new SnakeGame(maxTurnSnakeGame, inputMap, randomFirstApple);
 			snakeGame.setStrategies(arrayStrats);
 			snakeGame.init();
-			
+						
 			snakeGame.setTime(0);
 			
 			

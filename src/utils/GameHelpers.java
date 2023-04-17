@@ -1,7 +1,8 @@
 package utils;
 
-import java.util.Comparator;
-import java.util.ListIterator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import agent.Snake;
@@ -55,31 +56,43 @@ public class GameHelpers {
 		return false; 
 	}
 	
-	public static int closestEnnemy(Position pos, SnakeGame game, int idx) {
+	
+	public static int freeSpaceAround(Position position, SnakeGame game) {
 		
-		int closest = (game.getSizeX() + game.getSizeY());
+		Map<Position, Boolean> checked_positions = new HashMap<Position, Boolean>();
+		LinkedList<Position> unchecked_positions = new LinkedList<Position>();
 		
-		for(int i = 0; i < game.getSnakes().size(); i++) {
+		int free_space = 0;
+		
+		unchecked_positions.add(position);
+		
+		while(unchecked_positions.size()>0) {
 			
-			if(i == idx) {
+			Position checking = unchecked_positions.remove();
+			
+			if(checked_positions.getOrDefault(checking, false)) {
 				continue;
 			}
-			
-			for(Position ennemy_body_pos : game.getSnakes().get(i).getPositions()) {
-				
-				int distance = manhattanDistance(pos, ennemy_body_pos);
-				if(distance < closest) {
-					closest = distance;
-				}
 
+			
+			if(!GameHelpers.deadPos(checking, game)) {
+				
+				free_space++;
+				
+				for(AgentAction a : AgentAction.values()) {
+					
+					Position next_pos = calcNextPos(checking, a, game.getSizeX(), game.getSizeY());
+					unchecked_positions.add(next_pos);
+				}
 			}
 			
+			checked_positions.put(checking, true);		
 		}
 		
-		return closest;
+		return free_space;
 		
 	}
-	
+
 	
 	public static int closestWall(Position pos, SnakeGame game){
 		

@@ -113,7 +113,7 @@ public class TabularQLearning_solo extends Strategy {
 	
 	//	Code utilisé :
 	//	' ' : vide
-	//	'S' : corps de snake
+	//	'S' : corps de snake joueur
 	//  'J' : tête du snake joueur
 	//  'A' : pomme
 	//	'I' : invincibilité

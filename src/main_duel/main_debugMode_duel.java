@@ -2,8 +2,11 @@ package main_duel;
 import controller.ControllerSnakeGame;
 import model.InputMap;
 import model.SnakeGame;
+import strategy.ApproximateQLearning_duel;
 import strategy.ApproximateQLearning_solo;
 import strategy.Strategy;
+import strategy.StrategyAdvanced;
+import strategy.StrategyRandom;
 import strategy.TabularQLearning_duel;
 import strategy.TabularQLearning_solo;
 import utils.AgentAction;
@@ -22,7 +25,7 @@ public class main_debugMode_duel {
 		boolean randomFirstApple = true;
 		
 		
-		String layoutName = "layouts/duel/verySmallNoWall_fairduel.lay";
+		String layoutName = "layouts/duel/ArenaNoWall.lay";
 		
 		InputMap inputMap = null;
 		
@@ -38,8 +41,8 @@ public class main_debugMode_duel {
 		
 		Strategy[] arrayStrategies = new Strategy[inputMap.getStart_snakes().size()];
 		
-		arrayStrategies[0] = new TabularQLearning_duel(AgentAction.values().length, epsilon, gamma, alpha);
-		arrayStrategies[1] = new TabularQLearning_duel(AgentAction.values().length, epsilon, gamma, alpha);
+		arrayStrategies[0] = new ApproximateQLearning_duel(AgentAction.values().length, epsilon, gamma, alpha);
+		arrayStrategies[1] = new StrategyAdvanced();
 		
 		
 		for(int j =0; j < arrayStrategies.length; j++) {
